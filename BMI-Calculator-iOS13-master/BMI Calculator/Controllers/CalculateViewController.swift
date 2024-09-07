@@ -8,15 +8,16 @@
 
 import UIKit
 
-class ViewController: UIViewController {
+class CalculateViewController: UIViewController {
+    fileprivate let goToResultViewControllerSegueIdentifier = "goToResult"
+    
     @IBOutlet weak var heightSlider: UISlider!
     @IBOutlet weak var weightSlider: UISlider!
-    
     @IBOutlet weak var heightLabel: UILabel!
     @IBOutlet weak var weightLabel: UILabel!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
     }
 
     @IBAction func onHeightChanged(_ sender: UISlider) {
@@ -29,27 +30,15 @@ class ViewController: UIViewController {
     }
     
     @IBAction func onCalculateClicked(_ sender: UIButton) {
-        let height = Double(heightSlider.value)
-        let weight = Double(weightSlider.value)
-        let bmi = weight / (height * height)
-        let formattedValue = String(format: "%.2f", bmi)
-        let message: String
-        
-        if bmi < 18.5 {
-            message = "You are underweight."
-        } else if bmi < 25 {
-            message = "You are normal weight."
-        } else if bmi < 30 {
-            message = "You are overweight."
-        } else {
-            message = "You are obese."
+        performSegue(withIdentifier: goToResultViewControllerSegueIdentifier, sender: self)
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == goToResultViewControllerSegueIdentifier {
+            let destinationVC = segue.destination as! ResultViewController
+            let bmi = Double(weightSlider.value) / (Double(heightSlider.value) * Double(heightSlider.value))
+            destinationVC.bmi = String(format: "%.1f", bmi)
         }
-        
-        print(message)
-        
-        let secondVC = SecondViewController()
-        secondVC.bmiValue = String(format: "%.1f, \(message)", bmi)
-        self.present(secondVC, animated: true, completion: nil)
     }
 }
 
